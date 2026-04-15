@@ -50,6 +50,13 @@ local options = {
         completeopt = "menu,menuone",
     },
 
+    performance = {
+        debounce = 60,
+        throttle = 30,
+        fetching_timeout = 500,
+        max_view_entries = 50,
+    },
+
     window = {
         completion = {
             winhighlight = "Normal:CmpPmenu,CursorLine:CmpSel,Search:PmenuSel",
@@ -84,22 +91,18 @@ local options = {
         ["<C-f>"] = cmp.mapping.scroll_docs(4),
         ["<C-Space>"] = cmp.mapping.complete(),
         ["<C-e>"] = cmp.mapping.close(),
-        ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Insert,
-            select = true,
-        }),
         ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            elseif require("luasnip").expand_or_jumpable() then
+            if require("luasnip").expand_or_jumpable() then
                 vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
+            elseif cmp.visible() then
+                cmp.select_next_item()
             else
                 fallback()
             end
         end, { "i", "s" }),
         ["<S-Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
-                cmp.select_prev_item()
+                cmp.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true })
             elseif require("luasnip").jumpable(-1) then
                 vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
             else
@@ -108,11 +111,14 @@ local options = {
         end, { "i", "s" }),
     },
     sources = {
-        { name = "copilot" }, -- Copilot source
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
+        { name = "nvim_lsp", group_index = 2, priority = 700 },
+        { name = "luasnip", group_index = 2, priority = 750, max_item_count = 5 },
+        { name = "copilot", group_index = 2, priority = 650 },
         {
             name = "buffer",
+            group_index = 2,
+            priority = 250,
+            max_item_count = 5,
             option = {
                 -- Avoid accidentally running on big files
                 get_bufnrs = function()

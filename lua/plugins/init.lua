@@ -190,80 +190,61 @@ local builtin_plugins = {
         end,
     },
     {
-        "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
+        "saghen/blink.cmp",
+        version = "v0.*",
+        build = "cargo build --release",
+        timeout = 120,
         dependencies = {
+            "rafamadriz/friendly-snippets",
+            "Nash0x7E2/awesome-flutter-snippets",
+            "zbirenbaum/copilot.lua",
+            "giuxtaposition/blink-cmp-copilot",
             {
-                -- snippet plugin
                 "L3MON4D3/LuaSnip",
-                dependencies = "rafamadriz/friendly-snippets",
-                opts = { history = true, updateevents = "TextChanged,TextChangedI" },
-                config = function(_, opts)
-                    require("luasnip").config.set_config(opts)
-                    require("plugins.configs.luasnip")
+                version = "v2.*",
+                build = "make install",
+                config = function()
+                    require("luasnip.loaders.from_vscode").lazy_load()
                 end,
             },
-
-            -- autopairing of (){}[] etc
-            { "windwp/nvim-autopairs" },
-
-            -- cmp sources plugins
             {
-                "saadparwaiz1/cmp_luasnip",
-                "hrsh7th/cmp-nvim-lua",
-                "hrsh7th/cmp-nvim-lsp",
-                "hrsh7th/cmp-buffer",
-                "hrsh7th/cmp-path",
-                "onsails/lspkind.nvim",
+                "windwp/nvim-autopairs",
+                config = function()
+                    require("nvim-autopairs").setup({
+                        check_ts = true,
+                        disable_filetype = { "TelescopePrompt", "vim" },
+                        enable_check_bracket_line = false,
+                        ts_config = {
+                            lua = { "string", "comment" },
+                            javascript = { "string", "comment" },
+                            typescript = { "string", "comment" },
+                        },
+                    })
+
+                    local Rule = require("nvim-autopairs.rule")
+                    local npairs = require("nvim-autopairs")
+
+                    npairs.add_rules({
+                        Rule(" ", " ")
+                            :with_pair(function(opts)
+                                local pair = opts.line:sub(opts.col - 1, opts.col)
+                                return vim.tbl_contains({ "()", "[]", "{}" }, pair)
+                            end)
+                            :with_move(function(opts)
+                                return opts.prev_char:match(".%) ") ~= nil
+                            end)
+                            :use_key(" "),
+                        Rule("(", ")"):use_key("("),
+                        Rule("[", "]"):use_key("["),
+                        Rule("{", "}"):use_key("{"),
+                    })
+                end,
             },
         },
-        opts = function()
-            require("plugins.configs.cmp")
-        end,
-    },
-    -- Copilot plugins
-    {
-        "zbirenbaum/copilot-cmp",
-        dependencies = {
-            "zbirenbaum/copilot.lua",
-            cmd = "Copilot",
-            build = ":Copilot auth",
-            event = "InsertEnter",
-            opts = {
-                suggestion = { enabled = false }, -- Disable standalone Copilot (let cmp handle it)
-                panel = { enabled = false },
-            },
-        },
-        opts = {},
-        config = function()
-            require("copilot").setup({})
-            require("copilot_cmp").setup({})
-        end,
-        lazy = true,
-    },
-    {
-        "zbirenbaum/copilot.lua",
-        cmd = "Copilot",
-        build = ":Copilot auth",
         event = "InsertEnter",
-        opts = {
-            suggestion = { enabled = false }, -- Disable standalone Copilot (let cmp handle it)
-            panel = { enabled = false },
-        },
-        lazy = true,
-    },
-    {
-        "CopilotC-Nvim/CopilotChat.nvim",
-        dependencies = {
-            { "zbirenbaum/copilot.lua" },
-            { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
-        },
-        build = "make tiktoken", -- Only on MacOS or Linux
-        opts = {
-            -- See Configuration section for options
-            model = "claude-3.5-sonnet",
-        },
-        lazy = true,
+        opts = function()
+            return require("plugins.configs.blink")
+        end,
     },
     -- Colorizer
     {
@@ -277,12 +258,59 @@ local builtin_plugins = {
             end, 0)
         end,
     },
+    -- Copilot
+    {
+        "zbirenbaum/copilot.lua",
+        cmd = "Copilot",
+        event = "InsertEnter",
+        config = function()
+            require("copilot").setup({
+                suggestion = {
+                    enabled = true,
+                    auto_trigger = true,
+                    hide_during_completion = true, -- hide the ghost text when the completion menu is visible
+                    debounce = 75,
+                }, -- This will conflict and show 2 completion suggestions at the same time, so im adding an autocmd configuration to hide the ghost text when the completion menu is visible
+                panel = { enabled = false }, -- Disabled to prevent conflicts with blink.cmp
+            })
+        end,
+    },
     -- Keymappings
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
         config = function()
             require("which-key").setup()
+        end,
+    },
+    -- Dashboard inspiration
+    -- Developer excuses for the dashboard
+    -- Commented out inspire.nvim in favor of devexcuses.nvim
+    -- {
+    --     "RileyGabrielson/inspire.nvim",
+    --     lazy = false,
+    --     config = function()
+    --         require("inspire").setup({})
+    --     end,
+    -- },
+    -- Random dev excuses
+    {
+        "mahyarmirrashed/devexcuses.nvim",
+        lazy = false,
+        config = function()
+            require("devexcuses").setup()
+        end,
+    },
+    -- Dashboard
+    -- Fast and fully programmable greeter for neovim
+    {
+        "goolord/alpha-nvim",
+        lazy = false,
+        dependencies = {
+            "mahyarmirrashed/devexcuses.nvim",
+        },
+        config = function()
+            require("plugins.configs.alpha")
         end,
     },
 }

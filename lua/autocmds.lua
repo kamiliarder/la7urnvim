@@ -73,3 +73,29 @@ autocmd({ "ColorScheme" }, {
         vim.cmd([[hi TabLine guibg=none]])
     end,
 })
+
+-- Autosave when leaving insert mode
+autocmd("InsertLeave", {
+    pattern = "*",
+    callback = function()
+        if vim.bo.modified and not vim.bo.readonly and vim.fn.expand("%") ~= "" and vim.bo.buftype == "" then
+            vim.cmd("silent! write")
+        end
+    end,
+})
+
+-- Fix conflicts between copilot suggestions and blink's completion menu
+vim.api.nvim_create_autocmd("User", {
+    pattern = "BlinkCmpMenuOpen",
+    callback = function()
+        require("copilot.suggestion").dismiss()
+        vim.b.copilot_suggestion_hidden = true
+    end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+    pattern = "BlinkCmpMenuClose",
+    callback = function()
+        vim.b.copilot_suggestion_hidden = false
+    end,
+})

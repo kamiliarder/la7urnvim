@@ -108,3 +108,20 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Diagnostic keymaps
 map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Insert mode: Skip closing brackets/quotes with Ctrl+]
+map("i", "<C-]>", function()
+    local col = vim.fn.col(".")
+    local line = vim.fn.getline(".")
+    local char = line:sub(col, col)
+
+    if vim.tbl_contains({ ")", "]", "}", "'", '"' }, char) then
+        return vim.api.nvim_replace_termcodes("<Esc>la", true, false, true)
+    end
+    return "<C-]>"
+end, { expr = true, noremap = true, desc = "Skip closing bracket" })
+
+-- LSP Code Actions (refactor menu)
+vim.keymap.set({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, { desc = "LSP code action" })
+-- Rename symbol
+vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, { desc = "LSP rename" })

@@ -13,6 +13,11 @@
 require("luasnip.loaders.from_vscode").lazy_load({ exclude = vim.g.vscode_snippets_exclude or {} })
 require("luasnip.loaders.from_vscode").lazy_load({ paths = vim.g.vscode_snippets_path or "" })
 
+-- Load awesome-flutter-snippets
+require("luasnip.loaders.from_vscode").lazy_load({
+    paths = { vim.fn.stdpath("data") .. "/lazy/awesome-flutter-snippets" }
+})
+
 -- snipmate format
 require("luasnip.loaders.from_snipmate").load()
 require("luasnip.loaders.from_snipmate").lazy_load({ paths = vim.g.snipmate_snippets_path or "" })

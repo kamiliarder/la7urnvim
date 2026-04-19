@@ -175,7 +175,7 @@ end
 
 -- Colorscheme
 -- By default, use rose-pine
-cmd.colorscheme("rose-pine")
+cmd.colorscheme("habamax")
 
 -- Enable virtual_lines feature if the current nvim version is 0.11+
 if vim.fn.has("nvim-0.11") > 0 then

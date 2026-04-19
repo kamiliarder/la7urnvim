@@ -94,6 +94,7 @@ local builtin_plugins = {
             })
         end,
     },
+
     -- Formatter
     -- Lightweight yet powerful formatter plugin for Neovim
     {
@@ -313,6 +314,24 @@ local builtin_plugins = {
             require("plugins.configs.alpha")
         end,
     },
+    -- Icon Provider
+    {
+        "nvim-mini/mini.icons",
+        version = false,
+        config = function()
+            require("mini.icons").setup()
+        end,
+    },
+    --Color Generation
+    -- {
+    --     "RRethy/base16-nvim",
+    --     config = function()
+    --         require("matugen").setup()
+    --     end,
+    -- },
+    -- {
+    --     require("matugen").setup(),
+    -- },
 }
 
 local exist, custom = pcall(require, "custom")

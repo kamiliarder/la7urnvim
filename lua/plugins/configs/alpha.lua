@@ -9,10 +9,10 @@ local function get_excuse()
     if ok and devexcuses.get_excuse then
         local ok_excuse, excuses = pcall(devexcuses.get_excuse, 1)
         if ok_excuse and excuses and #excuses > 0 then
-            return excuses[1].excuse or "Why did you close Neovim?"
+            return excuses[1].excuse or "How do i close Neovim?"
         end
     end
-    return "Why did you close Neovim?"
+    return "How do i close Neovim?"
 end
 
 -- Header art - "lazur" in minimalist modern style
@@ -27,13 +27,12 @@ dashboard.section.header.val = {
 
 -- Menu items
 dashboard.section.buttons.val = {
-    dashboard.button("e", "📄 New file", ":ene <BAR> startinsert <CR>"),
-    dashboard.button("f", "🔍 Find file", ":Telescope find_files <CR>"),
-    dashboard.button("r", "⏱️  Recent files", ":Telescope oldfiles <CR>"),
-    dashboard.button("g", "🔎 Live grep", ":Telescope live_grep <CR>"),
-    dashboard.button("m", "📁 File explorer", ":MiniFiles <CR>"),
-    dashboard.button("l", "📋 Last session", ":lua require('persistence').load() <CR>"),
-    dashboard.button("q", "❌ Quit", ":qa<CR>"),
+    dashboard.button("e", "🗋 New file", ":ene <BAR> startinsert <CR>"),
+    dashboard.button("f", "🗎 Find file", ":Telescope find_files <CR>"),
+    dashboard.button("r", "ⴵ Recent files", ":Telescope oldfiles <CR>"),
+    dashboard.button("g", "(╭ರ_•́) Live grep", ":Telescope live_grep <CR>"),
+    dashboard.button("m", "🗁 File explorer", ":lua MiniFiles.open() <CR>"),
+    dashboard.button("q", "➜] Quit", ":qa<CR>"),
 }
 
 -- Footer with dev excuse from devexcuses.nvim

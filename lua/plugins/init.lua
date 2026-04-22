@@ -332,6 +332,9 @@ local builtin_plugins = {
     -- {
     --     require("matugen").setup(),
     -- },
+    {
+        "vyfor/cord.nvim",
+    },
 }
 
 local exist, custom = pcall(require, "custom")

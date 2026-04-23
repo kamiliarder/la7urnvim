@@ -190,3 +190,10 @@ if vim.fn.has("nvim-0.11") > 0 then
         },
     })
 end
+
+-- Auto refresh on file change
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "FocusGained" }, {
+    command = "checktime",
+})
+vim.o.updatetime = 3000 -- Check every 3s of idle

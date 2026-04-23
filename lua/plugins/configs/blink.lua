@@ -62,7 +62,6 @@ return {
         },
         -- Fine-tune source limits per category
         per_filetype = {
-            dart = { "lsp", "path", "snippets", "buffer" },
             -- You can add another filetype if you want limited sources
         },
     },
